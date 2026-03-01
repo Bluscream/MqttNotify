@@ -23,6 +23,44 @@ public partial class App : Application
         // Initialize the settings window but keep it hidden
         _settingsWindow = new MainWindow();
 
+        // Listen to notification activation (button clicks, textbox inputs)
+        Microsoft.Toolkit.Uwp.Notifications.ToastNotificationManagerCompat.OnActivated += toastArgs =>
+        {
+            var args = Microsoft.Toolkit.Uwp.Notifications.ToastArguments.Parse(toastArgs.Argument);
+
+            // Handle normal URL actions
+            if (args.TryGetValue("action", out string actionStr))
+            {
+                if (Uri.TryCreate(actionStr, UriKind.Absolute, out Uri? uriResult))
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = uriResult.ToString(),
+                        UseShellExecute = true
+                    });
+                }
+                else
+                {
+                    // If it's not a URL, it's a designated HA Action string. Report it via MQTT.
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        _ = _mqttService.PublishActionAsync(actionStr, toastArgs.UserInput);
+                    });
+                }
+            }
+            else if (args.TryGetValue("uri", out string urlStr))
+            {
+                if (Uri.TryCreate(urlStr, UriKind.Absolute, out Uri? uriResult))
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = uriResult.ToString(),
+                        UseShellExecute = true
+                    });
+                }
+            }
+        };
+
         // Start MQTT Client
         ReloadMqttConnection();
     }

@@ -31,18 +31,28 @@ class Program
             switch (args[i].ToLower())
             {
                 case "--mqtt-ip":
+                case "--ip":
+                case "-ip":
                     mqttIp = (i + 1 < args.Length) ? args[++i] : mqttIp;
                     break;
                 case "--mqtt-port":
+                case "--port":
+                case "-p":
                     if (i + 1 < args.Length && int.TryParse(args[++i], out int p)) mqttPort = p;
                     break;
                 case "--mqtt-user":
+                case "--user":
+                case "-u":
                     mqttUser = (i + 1 < args.Length) ? args[++i] : mqttUser;
                     break;
                 case "--mqtt-pw":
+                case "--pw":
+                case "--password":
                     mqttPw = (i + 1 < args.Length) ? args[++i] : mqttPw;
                     break;
                 case "--mqtt-topic":
+                case "--topic":
+                case "-t":
                     mqttTopic = (i + 1 < args.Length) ? args[++i] : mqttTopic;
                     break;
                 case "--help":
@@ -58,13 +68,13 @@ class Program
             Console.WriteLine("MqttNotify.Listener - Headless Windows Toast Receiver");
             Console.WriteLine("Usage: MqttNotify.Listener.exe [options]");
             Console.WriteLine("Options:");
-            Console.WriteLine("  --mqtt-ip <ip>      [Required] MQTT Broker IP or Hostname");
-            Console.WriteLine("  --mqtt-port <port>  [Optional] MQTT Broker Port (default: 1883)");
-            Console.WriteLine("  --mqtt-user <user>  [Optional] MQTT Username");
-            Console.WriteLine("  --mqtt-pw <pw>      [Optional] MQTT Password");
-            Console.WriteLine("  --mqtt-topic <topic>[Optional] MQTT Topic (default: desktop/notifications)");
+            Console.WriteLine("  --mqtt-ip, --ip, -ip       [Required*] MQTT Broker IP or Hostname");
+            Console.WriteLine("  --mqtt-port, --port, -p    [Optional]  MQTT Broker Port (default: 1883)");
+            Console.WriteLine("  --mqtt-user, --user, -u    [Optional]  MQTT Username");
+            Console.WriteLine("  --mqtt-pw, --pw, --password[Optional]  MQTT Password");
+            Console.WriteLine("  --mqtt-topic, --topic, -t  [Optional]  MQTT Topic (default: desktop/notifications)");
             Console.WriteLine("");
-            Console.WriteLine("These settings can also be provided via Environment Variables:");
+            Console.WriteLine("* Required unless configured via Environment Variables:");
             Console.WriteLine("  MQTT_IP, MQTT_PORT, MQTT_USER, MQTT_PW, MQTT_TOPIC");
             return;
         }

@@ -24,18 +24,18 @@ It runs cleanly from the Command Line (or a background script) and automatically
 3. Run the Listener with your required parameters:
 
 ```bash
-.\MqttNotify.Listener.exe --mqtt-ip 192.168.1.100 --mqtt-port 1883 --mqtt-user <user> --mqtt-pw <pass>
+.\MqttNotify.Listener.exe -ip 192.168.1.100 -p 1883 -u <user> --pw <pass>
 ```
 
 ### Configuration Precedence:
 The app reads settings in the following order:
-1. Command Line Arguments (`--mqtt-ip`, `--mqtt-port`, `--mqtt-user`, `--mqtt-pw`, `--mqtt-topic`)
+1. Command Line Arguments (`-ip` / `--mqtt-ip`, `-p` / `--mqtt-port`, `-u` / `--mqtt-user`, `--pw` / `--mqtt-pw`, `-t` / `--mqtt-topic`)
 2. Environment Variables (`MQTT_IP`, `MQTT_PORT`, `MQTT_USER`, `MQTT_PW`, `MQTT_TOPIC`)
 
 ### Testing your Setup:
 You can quickly ensure Notifications are showing correctly by running the included `MqttNotify.Test.exe` application:
 ```bash
-.\MqttNotify.Test.exe --mqtt-ip 192.168.1.100 --title "Incoming Alert!" --message "Testing the Windows Toast!"
+.\MqttNotify.Test.exe -ip 192.168.1.100 --title "Incoming Alert!" -m "Testing the Windows Toast!"
 ```
 This application will send a mock payload (containing dummy buttons, inputs, and URLs) to verify your Listener handles rich notifications flawlessly.
 

@@ -33,24 +33,37 @@ class Program
             switch (args[i].ToLower())
             {
                 case "--mqtt-ip":
+                case "--ip":
+                case "-ip":
                     mqttIp = (i + 1 < args.Length) ? args[++i] : mqttIp;
                     break;
                 case "--mqtt-port":
+                case "--port":
+                case "-p":
                     if (i + 1 < args.Length && int.TryParse(args[++i], out int p)) mqttPort = p;
                     break;
                 case "--mqtt-user":
+                case "--user":
+                case "-u":
                     mqttUser = (i + 1 < args.Length) ? args[++i] : mqttUser;
                     break;
                 case "--mqtt-pw":
+                case "--pw":
+                case "--password":
                     mqttPw = (i + 1 < args.Length) ? args[++i] : mqttPw;
                     break;
                 case "--mqtt-topic":
+                case "--topic":
+                case "-t":
                     mqttTopic = (i + 1 < args.Length) ? args[++i] : mqttTopic;
                     break;
                 case "--title":
+                case "-title":
                     title = (i + 1 < args.Length) ? args[++i] : title;
                     break;
                 case "--message":
+                case "-m":
+                case "--msg":
                     messageText = (i + 1 < args.Length) ? args[++i] : messageText;
                     break;
             }
@@ -58,8 +71,8 @@ class Program
 
         if (string.IsNullOrWhiteSpace(mqttIp))
         {
-            Console.WriteLine("Usage: MqttNotify.Test.exe --mqtt-ip <ip> [--title <title>] [--message <message>]");
-            Console.WriteLine("Please provide --mqtt-ip or set the MQTT_IP environment variable.");
+            Console.WriteLine("Usage: MqttNotify.Test.exe --ip <ip> [--title <title>] [--message <message>]");
+            Console.WriteLine("Please provide --ip or set the MQTT_IP environment variable.");
             return;
         }
 

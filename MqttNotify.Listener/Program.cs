@@ -55,8 +55,8 @@ class Program
 
         if (showHelp || string.IsNullOrWhiteSpace(mqttIp))
         {
-            Console.WriteLine("HassNotifyReceiver - Headless MQTT Windows Toast Receiver");
-            Console.WriteLine("Usage: HassNotifyReceiver.exe [options]");
+            Console.WriteLine("MqttNotify.Listener - Headless Windows Toast Receiver");
+            Console.WriteLine("Usage: MqttNotify.Listener.exe [options]");
             Console.WriteLine("Options:");
             Console.WriteLine("  --mqtt-ip <ip>      [Required] MQTT Broker IP or Hostname");
             Console.WriteLine("  --mqtt-port <port>  [Optional] MQTT Broker Port (default: 1883)");
@@ -69,7 +69,7 @@ class Program
             return;
         }
 
-        Console.WriteLine("Starting HassNotifyReceiver...");
+        Console.WriteLine("Starting MqttNotify.Listener...");
 
         // Setup notification backgrounds action processor
         ToastNotificationManagerCompat.OnActivated += toastArgs =>

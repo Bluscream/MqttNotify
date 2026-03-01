@@ -1,9 +1,9 @@
 # Home Assistant Configuration Guide
 
-This guide explains how to configure Home Assistant to send standard and persistent notifications to the **HassNotifyReceiver**.
+This guide explains how to configure Home Assistant to send standard and persistent notifications to the **MqttNotify** listener app.
 
 ## 1. Configure the standard Notifier
-You need to create a new notification platform in Home Assistant that uses MQTT to send messages to the topic configured in HassNotifyReceiver (e.g., `desktop/notifications`).
+You need to create a new notification platform in Home Assistant that uses MQTT to send messages to the topic configured in MqttNotify (e.g., `desktop/notifications`).
 
 Add this to your `configuration.yaml` in Home Assistant:
 
@@ -36,7 +36,7 @@ Add this automation to your Home Assistant:
 
 ```yaml
 alias: "Forward Persistent Notifications to Windows PC"
-description: "Listens for new persistent notifications and sends them to HassNotifyReceiver via MQTT."
+description: "Listens for new persistent notifications and sends them to MqttNotify via MQTT."
 trigger:
   - platform: event
     event_type: call_service

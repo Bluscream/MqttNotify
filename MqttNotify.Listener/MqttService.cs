@@ -217,14 +217,23 @@ public class MqttService
             return Task.CompletedTask;
         };
 
-        await _mqttClient.StartAsync(options);
-
-        if (!string.IsNullOrWhiteSpace(mqttTopic))
+        try
         {
-            var filter = new MqttTopicFilterBuilder()
-                .WithTopic(mqttTopic)
-                .Build();
-            await _mqttClient.SubscribeAsync(new[] { filter });
+            await _mqttClient.StartAsync(options);
+
+            if (!string.IsNullOrWhiteSpace(mqttTopic))
+            {
+                var filter = new MqttTopicFilterBuilder()
+                    .WithTopic(mqttTopic)
+                    .Build();
+                await _mqttClient.SubscribeAsync(new[] { filter });
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"\n[Error] Failed to connect to MQTT broker at '{mqttIp}:{mqttPort}'.");
+            Console.WriteLine($"Reason: {ex.Message}");
+            Console.WriteLine("Please check your broker IP, port, and credentials.");
         }
     }
 

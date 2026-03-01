@@ -90,40 +90,48 @@ class Program
             clientOptionsBuilder.WithCredentials(mqttUser, mqttPw);
         }
 
-        await mqttClient.ConnectAsync(clientOptionsBuilder.Build(), CancellationToken.None);
-        Console.WriteLine("Connected! Sending test notification...");
-
-        var payload = new
+        try
         {
-            title = title,
-            message = messageText,
-            data = new
+            await mqttClient.ConnectAsync(clientOptionsBuilder.Build(), CancellationToken.None);
+            Console.WriteLine("Connected! Sending test notification...");
+
+            var payload = new
             {
-                clickAction = "https://github.com",
-                duration = 5,
-                actions = new[]
+                title = title,
+                message = messageText,
+                data = new
                 {
-                    new { action = "test_action_1", title = "Test Button", uri = "" },
-                    new { action = "", title = "Open Google", uri = "https://google.com" }
-                },
-                inputs = new[]
-                {
-                    new { id = "reply", title = "Quick Reply", text = "I am a default reply" }
+                    clickAction = "https://github.com",
+                    duration = 5,
+                    actions = new[]
+                    {
+                        new { action = "test_action_1", title = "Test Button", uri = "" },
+                        new { action = "", title = "Open Google", uri = "https://google.com" }
+                    },
+                    inputs = new[]
+                    {
+                        new { id = "reply", title = "Quick Reply", text = "I am a default reply" }
+                    }
                 }
-            }
-        };
+            };
 
-        string json = JsonSerializer.Serialize(payload);
+            string json = JsonSerializer.Serialize(payload);
 
-        var message = new MqttApplicationMessageBuilder()
-            .WithTopic(mqttTopic)
-            .WithPayload(json)
-            .WithRetainFlag(false)
-            .Build();
+            var message = new MqttApplicationMessageBuilder()
+                .WithTopic(mqttTopic)
+                .WithPayload(json)
+                .WithRetainFlag(false)
+                .Build();
 
-        await mqttClient.PublishAsync(message, CancellationToken.None);
+            await mqttClient.PublishAsync(message, CancellationToken.None);
 
-        Console.WriteLine($"Published to '{mqttTopic}'. Disconnecting...");
-        await mqttClient.DisconnectAsync();
+            Console.WriteLine($"Published to '{mqttTopic}'. Disconnecting...");
+            await mqttClient.DisconnectAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"\n[Error] Failed to connect or publish to MQTT broker at '{mqttIp}:{mqttPort}'.");
+            Console.WriteLine($"Reason: {ex.Message}");
+        }
     }
 }

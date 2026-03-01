@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Toolkit.Uwp.Notifications;
 
-namespace HassNotifyReceiver;
+namespace MqttNotify.Listener;
 
 class Program
 {

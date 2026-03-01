@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="MqttNotify.Listener/MqttNotify.Listener.csproj" />
+  <Project Path="MqttNotify.Test/MqttNotify.Test.csproj" />
+</Solution>

@@ -1,12 +1,15 @@
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using Microsoft.Toolkit.Uwp.Notifications;
-using Windows.UI.Notifications;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Extensions.ManagedClient;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using Windows.UI.Notifications;
 
-namespace HassNotifyReceiver;
+namespace MqttNotify.Listener;
 
 public class NotificationAction
 {

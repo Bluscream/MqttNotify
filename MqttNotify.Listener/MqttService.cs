@@ -59,10 +59,17 @@ public class ToastPayload
 public class MqttService
 {
     private IManagedMqttClient? _mqttClient;
+    private string? _mqttTopic;
+    private string? _machineName;
 
     public async Task StartAsync(string mqttIp, int mqttPort, string? mqttUser, string? mqttPw, string mqttTopic)
     {
         if (string.IsNullOrWhiteSpace(mqttIp)) return;
+
+        _mqttTopic = mqttTopic;
+        _machineName = Environment.MachineName.ToLower().Replace(" ", "_").Replace("-", "_");
+
+        Console.WriteLine($"[Debug] Connecting as user '{mqttUser}' to '{mqttIp}:{mqttPort}'...");
 
         var factory = new MqttFactory();
         _mqttClient = factory.CreateManagedMqttClient();
@@ -86,7 +93,7 @@ public class MqttService
             try
             {
                 var payloadString = System.Text.Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
-                System.Diagnostics.Debug.WriteLine($"Received topic: {e.ApplicationMessage.Topic}, Payload: {payloadString}");
+                Console.WriteLine($"Received topic: {e.ApplicationMessage.Topic}, Payload: {payloadString}");
 
                 ToastPayload? payload = null;
                 try
@@ -217,6 +224,21 @@ public class MqttService
             return Task.CompletedTask;
         };
 
+        _mqttClient.ConnectingFailedAsync += async e =>
+        {
+            Console.WriteLine($"\n[Error] Failed to connect to MQTT broker at '{mqttIp}:{mqttPort}'.");
+            Console.WriteLine($"Reason: {e.Exception.Message}");
+            Console.WriteLine("Will retry automatically in 5 seconds...");
+            await Task.CompletedTask;
+        };
+
+        _mqttClient.ConnectedAsync += async e =>
+        {
+            Console.WriteLine($"Successfully connected to MQTT broker at '{mqttIp}:{mqttPort}'.");
+            Console.WriteLine($"Listening on '{mqttTopic}'...");
+            await PublishDiscoveryMessageAsync();
+        };
+
         try
         {
             await _mqttClient.StartAsync(options);
@@ -231,9 +253,7 @@ public class MqttService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"\n[Error] Failed to connect to MQTT broker at '{mqttIp}:{mqttPort}'.");
-            Console.WriteLine($"Reason: {ex.Message}");
-            Console.WriteLine("Please check your broker IP, port, and credentials.");
+            Console.WriteLine($"\n[Error] Failed to initialize MQTT Client: {ex.Message}");
         }
     }
 
@@ -279,5 +299,35 @@ public class MqttService
             .Build();
 
         await _mqttClient.InternalClient.PublishAsync(message);
+    }
+
+    private async Task PublishDiscoveryMessageAsync()
+    {
+        if (_mqttClient == null || string.IsNullOrWhiteSpace(_mqttTopic)) return;
+
+        var discoveryTopic = $"homeassistant/notify/{_machineName}/config";
+        var payload = new
+        {
+            name = (string?)null, // Setting name to null makes it inherit the device name
+            unique_id = $"mqtt_notify_{_machineName}",
+            command_topic = _mqttTopic,
+            device = new
+            {
+                identifiers = new[] { $"mqtt_notify_{_machineName}" },
+                name = Environment.MachineName,
+                model = "MqttNotify.Listener",
+                manufacturer = "Bluscream"
+            }
+        };
+
+        var json = JsonSerializer.Serialize(payload);
+        var message = new MqttApplicationMessageBuilder()
+            .WithTopic(discoveryTopic)
+            .WithPayload(json)
+            .WithRetainFlag(true)
+            .Build();
+
+        await _mqttClient.InternalClient.PublishAsync(message);
+        Console.WriteLine($"Published discovery message to '{discoveryTopic}'");
     }
 }

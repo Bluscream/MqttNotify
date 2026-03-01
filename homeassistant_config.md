@@ -3,19 +3,23 @@
 This guide explains how to configure Home Assistant to send standard and persistent notifications to the **MqttNotify** listener app.
 
 ## 1. Configure the standard Notifier
-You need to create a new notification platform in Home Assistant that uses MQTT to send messages to the topic configured in MqttNotify (e.g., `desktop/notifications`).
 
-Add this to your `configuration.yaml` in Home Assistant:
+### Option A: Automatic Discovery (Recommended)
+Starting with version 1.5.0, the **MqttNotify.Listener** app will automatically Register itself with Home Assistant using **MQTT Discovery**. 
+
+Once the app is running and connected to your broker, a new entity named `notify.windows_notifications_<your_pc_name>` should appear automatically in your Home Assistant Devices/Settings.
+
+### Option B: Manual YAML (Fallback)
+If Discovery is disabled in your MQTT integration, you can manually add this to your `configuration.yaml`:
 
 ```yaml
-notify:
-  - name: windows_pc
-    platform: mqtt
-    command_topic: "desktop/notifications"
-    # Ensure the command_topic exactly matches what is configured in the Windows App Settings
+mqtt:
+  - notify:
+      name: "windows_pc"
+      command_topic: "desktop/notifications"
 ```
 
-**Restart Home Assistant** after making this change.
+**Restart Home Assistant** after making manual changes.
 
 ### How to use it in Automations:
 You can now use the `notify.windows_pc` service in HA like any other notifier.

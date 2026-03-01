@@ -5,6 +5,8 @@
     <TargetFramework>net10.0-windows10.0.17763.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Version>1.5.0</Version>
+    <Description>Windows Mqtt Notification Listener</Description>
   </PropertyGroup>
 
   <ItemGroup>

@@ -24,6 +24,9 @@ class Program
         mqttPw = Environment.GetEnvironmentVariable("MQTT_PW") ?? mqttPw;
         mqttTopic = Environment.GetEnvironmentVariable("MQTT_TOPIC") ?? mqttTopic;
 
+        string title = "Test Notification";
+        string messageText = "This is a test from MqttNotify.Test!";
+
         // 2. CLI Args
         for (int i = 0; i < args.Length; i++)
         {
@@ -44,11 +47,18 @@ class Program
                 case "--mqtt-topic":
                     mqttTopic = (i + 1 < args.Length) ? args[++i] : mqttTopic;
                     break;
+                case "--title":
+                    title = (i + 1 < args.Length) ? args[++i] : title;
+                    break;
+                case "--message":
+                    messageText = (i + 1 < args.Length) ? args[++i] : messageText;
+                    break;
             }
         }
 
         if (string.IsNullOrWhiteSpace(mqttIp))
         {
+            Console.WriteLine("Usage: MqttNotify.Test.exe --mqtt-ip <ip> [--title <title>] [--message <message>]");
             Console.WriteLine("Please provide --mqtt-ip or set the MQTT_IP environment variable.");
             return;
         }
@@ -72,8 +82,8 @@ class Program
 
         var payload = new
         {
-            title = "Test Notification",
-            message = "This is a test from MqttNotify.Test!",
+            title = title,
+            message = messageText,
             data = new
             {
                 clickAction = "https://github.com",

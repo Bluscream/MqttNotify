@@ -35,36 +35,36 @@ class Program
                 case "--mqtt-ip":
                 case "--ip":
                 case "-ip":
-                    mqttIp = (i + 1 < args.Length) ? args[++i] : mqttIp;
+                    if (i + 1 < args.Length) { mqttIp = args[i + 1]; i++; }
                     break;
                 case "--mqtt-port":
                 case "--port":
                 case "-p":
-                    if (i + 1 < args.Length && int.TryParse(args[++i], out int p)) mqttPort = p;
+                    if (i + 1 < args.Length && int.TryParse(args[i + 1], out int p)) { mqttPort = p; i++; }
                     break;
                 case "--mqtt-user":
                 case "--user":
                 case "-u":
-                    mqttUser = (i + 1 < args.Length) ? args[++i] : mqttUser;
+                    if (i + 1 < args.Length) { mqttUser = args[i + 1]; i++; }
                     break;
                 case "--mqtt-pw":
                 case "--pw":
                 case "--password":
-                    mqttPw = (i + 1 < args.Length) ? args[++i] : mqttPw;
+                    if (i + 1 < args.Length) { mqttPw = args[i + 1]; i++; }
                     break;
                 case "--mqtt-topic":
                 case "--topic":
                 case "-t":
-                    mqttTopic = (i + 1 < args.Length) ? args[++i] : mqttTopic;
+                    if (i + 1 < args.Length) { mqttTopic = args[i + 1]; i++; }
                     break;
                 case "--title":
                 case "-title":
-                    title = (i + 1 < args.Length) ? args[++i] : title;
+                    if (i + 1 < args.Length) { title = args[i + 1]; i++; }
                     break;
                 case "--message":
                 case "-m":
                 case "--msg":
-                    messageText = (i + 1 < args.Length) ? args[++i] : messageText;
+                    if (i + 1 < args.Length) { messageText = args[i + 1]; i++; }
                     break;
             }
         }

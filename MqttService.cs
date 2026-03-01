@@ -57,21 +57,20 @@ public class MqttService
 {
     private IManagedMqttClient? _mqttClient;
 
-    public async Task StartAsync()
+    public async Task StartAsync(string mqttIp, int mqttPort, string? mqttUser, string? mqttPw, string mqttTopic)
     {
-        var settings = SettingsManager.Load();
-        if (string.IsNullOrWhiteSpace(settings.MqttBrokerAddress)) return;
+        if (string.IsNullOrWhiteSpace(mqttIp)) return;
 
         var factory = new MqttFactory();
         _mqttClient = factory.CreateManagedMqttClient();
 
         var clientOptionsBuilder = new MqttClientOptionsBuilder()
             .WithClientId(Guid.NewGuid().ToString())
-            .WithTcpServer(settings.MqttBrokerAddress, settings.MqttPort);
+            .WithTcpServer(mqttIp, mqttPort);
 
-        if (!string.IsNullOrEmpty(settings.MqttUsername))
+        if (!string.IsNullOrEmpty(mqttUser))
         {
-            clientOptionsBuilder.WithCredentials(settings.MqttUsername, settings.MqttPassword);
+            clientOptionsBuilder.WithCredentials(mqttUser, mqttPw);
         }
 
         var options = new ManagedMqttClientOptionsBuilder()
@@ -217,10 +216,10 @@ public class MqttService
 
         await _mqttClient.StartAsync(options);
 
-        if (!string.IsNullOrWhiteSpace(settings.MqttTopic))
+        if (!string.IsNullOrWhiteSpace(mqttTopic))
         {
             var filter = new MqttTopicFilterBuilder()
-                .WithTopic(settings.MqttTopic)
+                .WithTopic(mqttTopic)
                 .Build();
             await _mqttClient.SubscribeAsync(new[] { filter });
         }
@@ -236,7 +235,7 @@ public class MqttService
         }
     }
 
-    public async Task PublishActionAsync(string actionId, Windows.Foundation.Collections.ValueSet userInput)
+    public async Task PublishActionAsync(string actionId, Windows.Foundation.Collections.ValueSet userInput, string baseTopic)
     {
         if (_mqttClient == null || !_mqttClient.IsConnected) return;
 
@@ -257,12 +256,9 @@ public class MqttService
 
         string json = System.Text.Json.JsonSerializer.Serialize(payload);
         
-        // Use a dedicated topic for replies just like HASS.Agent
-        // e.g. desktop/notifications/actions
-        var settings = SettingsManager.Load();
-        if (string.IsNullOrWhiteSpace(settings.MqttTopic)) return;
+        if (string.IsNullOrWhiteSpace(baseTopic)) return;
 
-        string replyTopic = settings.MqttTopic + "/actions";
+        string replyTopic = baseTopic + "/actions";
 
         var message = new MqttApplicationMessageBuilder()
             .WithTopic(replyTopic)
